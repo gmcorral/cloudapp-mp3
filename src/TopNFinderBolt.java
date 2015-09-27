@@ -24,8 +24,8 @@ public class TopNFinderBolt extends BaseBasicBolt {
   @Override
   public void execute(Tuple tuple, BasicOutputCollector collector) {
  
-	String word = tuple.getString(0));
-	Integer count = tuple.getInteger(1));
+	String word = tuple.getString(0);
+	Integer count = tuple.getInteger(1);
 	
 	currentTopWords.put(word, count);
 
