@@ -47,7 +47,9 @@ public class FileReaderSpout implements IRichSpout {
 		try {
 			String line = _fileReader.readLine();
 			if(line == null) {
-				Utils.sleep(1000);
+				try {
+					Utils.sleep(1000);
+				} catch (Exception ignore) {}
 			} else {
 				_collector.emit(new Values(line));
 			}
