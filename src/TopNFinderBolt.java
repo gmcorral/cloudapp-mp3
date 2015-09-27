@@ -5,6 +5,7 @@ import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
 
+import java.util.Map;
 import java.util.HashMap;
 
 /**
@@ -33,10 +34,10 @@ public class TopNFinderBolt extends BaseBasicBolt {
 	if (currentTopWords.size() > N) {
 		String minWord = null;
 		Integer minCount = Integer.MAX_VALUE;
-		for (Entry<String, Integer> word : currentTopWords) {
-		  if(word.getValue() < minCount) {
-			  minCount = word.getValue();
-			  minWord = word.getKey();
+		for (Map.Entry<String, Integer> mapEntry : currentTopWords.entrySet()) {
+		  if(mapEntry.getValue() < minCount) {
+			  minCount = mapEntry.getValue();
+			  minWord = mapEntry.getKey();
 		  }
 		}
 		currentTopWords.remove(minWord);
