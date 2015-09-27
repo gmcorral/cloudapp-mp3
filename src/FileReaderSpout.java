@@ -3,7 +3,11 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 import backtype.storm.spout.SpoutOutputCollector;
 import backtype.storm.task.TopologyContext;
@@ -15,18 +19,19 @@ import backtype.storm.tuple.Values;
 public class FileReaderSpout implements IRichSpout {
   private SpoutOutputCollector _collector;
   private TopologyContext context;
-
-
+  private BufferedReader _fileReader;
+  
   @Override
   public void open(Map conf, TopologyContext context,
                    SpoutOutputCollector collector) {
 
-     /*
-    ----------------------TODO-----------------------
-    Task: initialize the file reader
-
-
-    ------------------------------------------------- */
+	try {
+		Object inputFileName = conf.get("inputFileName");
+		if (inputFileName != null)
+			_fileReader = new BufferedReader(new FileReader(inputFileName.toString()));
+	} catch (Exception ex) {
+		System.err.println("Error opening file: " + ex);
+	}
 
     this.context = context;
     this._collector = collector;
@@ -35,15 +40,20 @@ public class FileReaderSpout implements IRichSpout {
   @Override
   public void nextTuple() {
 
-     /*
-    ----------------------TODO-----------------------
-    Task:
-    1. read the next line and emit a tuple for it
-    2. don't forget to sleep when the file is entirely read to prevent a busy-loop
-
-    ------------------------------------------------- */
-
-
+	if (_fileReader == null) {
+		Utils.sleep(1000);
+	} else {
+		try {
+			String line = _fileReader.readLine();
+			if(line == null) {
+				Utils.sleep(1000);
+			} else {
+				_collector.emit(new Values(line));
+			}
+		} catch (Exception ex) {
+			System.err.println("Error reading line: " + ex);
+		}
+	}
   }
 
   @Override
@@ -55,13 +65,13 @@ public class FileReaderSpout implements IRichSpout {
 
   @Override
   public void close() {
-   /*
-    ----------------------TODO-----------------------
-    Task: close the file
-
-
-    ------------------------------------------------- */
-
+	  
+	  if (_fileReader != null) {
+		try {
+			_fileReader.close();
+		} catch (IOException ignore) {
+		}
+	  }
   }
 
 
